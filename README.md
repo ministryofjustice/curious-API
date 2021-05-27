@@ -4,4 +4,4 @@ This placeholder repository hosts specifcations for Curious' system facing inter
 * API specifications
 * Event message definitions
 
-API Specification can be viewed [Here](https://editor.swagger.io/?url=https://raw.githack.com/ministryofjustice/curious/main/curious-appi-specification.yaml)
+API Specification can be viewed [Here](https://editor.swagger.io/?url=https://raw.githack.com/ministryofjustice/curious/main/curious-api-specification.yaml)
