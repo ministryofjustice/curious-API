@@ -1,15 +1,7 @@
-# Ministry of Justice Template Repository
+# Curious Education Delivery Contract Management System
 
-Use this template to [create a repository] with the default initial files for a Ministry of Justice Github repository, including:
+This placeholder repository hosts specifcations for Curious' system facing interfaces and includes:
+* API specifications
+* Event message definitions
 
-* The correct LICENSE
-* Github actions
-* .gitignore file
-
-Once you have created your repository, please:
-
-* Edit the copy of this README.md file to document your project
-* Grant permissions to the appropriate MoJ teams
-* Setup branch protection
-
-[create a repository]: https://github.com/ministryofjustice/template-repository/generate
+API Specification can be viewed [Here](https://editor.swagger.io/?url=https://raw.githack.com/ministryofjustice/[repository name]/main/[filename].yaml)
