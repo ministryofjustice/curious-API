@@ -1,0 +1,265 @@
+openapi: 3.0.1
+info:
+  title: Curious learner profile and education API
+  description: 'REST endpoints to expose Curious learner information data as well as
+  the enrolled courses and their corresponding information.'
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: development@meganexus.com
+  version: 1.0.0
+servers:
+  - url: https://{environment}services.sequation.net
+    variables:
+      environment:
+        default: test # Production
+        enum:
+          - test      # Test
+          - live      # Production
+tags:
+- name: Learner Profile
+  description: Profile information about the Learners records from Curious
+- name: Learner Education
+  description: The courses informationa a lerner has been enrolled with during his services in the prison.
+paths:
+  /learnerProfile/{prn}:
+    get:
+      tags:
+      - Learner Profile
+      summary: Returns all learner data for the given PRN from and eventually from all establishments the learner has been resident in.
+      operationId: getLearnerInfo
+      parameters:
+        - name: X-Authorization
+          in: header
+          description: The JWT Bearer Token.
+          schema:
+            type: string
+            format: uuid
+          required: true      
+        - name: prn
+          in: path
+          description: NOMIS Assigned Offender Number (Prisoner Identifier)
+          required: true
+          schema:
+            type: string      
+        - name: establishmentId
+          in: query
+          description: The establishment the learner is or was resident in.
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LearnerProfileResponseObject'          
+        404:
+          description: Learner record has not been found
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/NonSuccessResponseObject'          
+        401:
+          description: Authentication required.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/NonSuccessResponseObject'
+
+  /learnerEducation/{prn}:
+    get:
+      tags:
+      - Learner Education
+      summary: Returns all courses the learner has been enrolled. This is going to contain all course entries, with no filtering on the course enrolment status, in order to provide a holistic view of the learner educational journey.
+      operationId: getLearnerEducation
+      parameters:
+        - name: X-Authorization
+          in: header
+          description: The JWT Bearer Token.
+          schema:
+            type: string
+            format: uuid
+          required: true      
+        - name: prn
+          in: path
+          description: NOMIS Assigned Offender Number (Prisoner Identifier)
+          required: true
+          schema:
+            type: string      
+        - name: establishmentId
+          in: query
+          description: The establishment the learner is or was resident in.
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LearnerEducationResponseObject'         
+                  
+        404:
+          description: Learner record has not been found
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/NonSuccessResponseObject'          
+        401:
+          description: Authentication required.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/NonSuccessResponseObject' 
+
+components:
+  schemas:
+    LearnerProfileResponseObject:
+      type: object
+      properties:
+        prn:
+          type: string
+          description: NOMIS Offender Number
+        establishmentId:
+          type: integer
+          format: int64
+        uln:
+          type: string
+        lddHealthProblem:
+          type: string
+        priorAttainment:
+          type: string
+        mathsQualnGrade:
+          type: string
+        mathsAssessmentDate:
+          type: string
+          format: date
+        englishQualnGrade:
+          type: string
+        englishAssessmentDate:
+          type: string
+          format: date
+        digitalLiteracyQualnGrade:
+          type: string
+        digitalLiteracyAssessmentDate:
+          type: string
+          format: date
+        languageStatus:
+          type: string          
+        plannedHours:
+          type: string
+    LearnerEducationResponseObject:
+      type: object
+      properties:
+        prn:
+          type: string
+          description: NOMIS Offender Number
+        establishmentId:
+          type: integer
+          format: int64
+        a2LevelIndicator:
+          type: boolean
+        accessHEIndicator:
+          type: boolean
+        actualGLH:
+          type: integer
+        aimSeqNumber:
+          type: integer
+        aLevelIndicator:
+          type: boolean
+        asLevelIndicator:
+          type: boolean
+        attendedGLH:
+          type: integer
+        completionStatus:
+          type: string
+        courseCode:
+          type: string
+        courseName:
+          type: string
+        deliveryLocationPostCode:
+          type: string          
+        deliveryMethodType:
+          type: string 
+        employmentOutcome:
+          type: string          
+        functionalSkillsIndicator:
+          type: boolean 
+        fundingAdjustmentForPriorLearning:
+          type: integer          
+        fundingModel:
+          type: string 
+        fundingType:
+          type: string          
+        gceIndicator:
+          type: boolean 
+        gcsIndicator:
+          type: boolean          
+        isAccredited:
+          type: boolean 
+        keySkillsIndicator:
+          type: boolean    
+        learnAimRef:
+          type: string
+        learnersAimType:
+          type: string
+        learningActualEndDate:
+          type: string
+          format: date
+        learningPlannedEndDate:
+          type: string
+          format: date
+        learningStartDate:
+          type: string
+          format: date
+        level:
+          type: string
+        lrsGLH:
+          type: integer
+        occupationalIndicator:
+          type: boolean
+        outcome:
+          type: string
+        outcomeGrade:
+          type: string
+        prisonWithdrawalReason:
+          type: string
+        qcfCertificateIndicator:
+          type: boolean
+        qcfDiplomaIndicator:
+          type: boolean
+        qcfIndicator:
+          type: boolean
+        reviewed:
+          type: boolean
+        sectorSubjectAreaTier2:
+          type: string
+        subcontractedPartnershipUKPRN:
+          type: integer
+        unitType:
+          type: string
+        withdrawalReasonAgreed:
+          type: boolean
+        withdrawlReasons:
+          type: string
+    NonSuccessResponseObject:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        errorMessage:
+          type: string
+        httpStatusCode:
+          type: integer
