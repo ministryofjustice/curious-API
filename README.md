@@ -1,6 +1,6 @@
-# Curious
+# Curious API
 
-## A Contract Management System for Education Providers
+## An API into Curious - the Contract Management System for HMPPS Education Providers
 
 Supplier : [MegaNexus](https://www.meganexus.com)
 
