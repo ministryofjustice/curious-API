@@ -135,27 +135,26 @@ components:
         establishmentId:
           type: integer
           format: int64
+        establishmentName:
+          type: string
         uln:
           type: string
         lddHealthProblem:
           type: string
         priorAttainment:
           type: string
-        mathsQualnGrade:
-          type: string
-        mathsAssessmentDate:
-          type: string
-          format: date
-        englishQualnGrade:
-          type: string
-        englishAssessmentDate:
-          type: string
-          format: date
-        digitalLiteracyQualnGrade:
-          type: string
-        digitalLiteracyAssessmentDate:
-          type: string
-          format: date
+        qualifications:
+          type: array
+          items:
+            type: object
+            properties:
+              qualificationType:
+                type: string
+              qualtificationGrade:
+                type: string
+              assessmentDate:
+                type: string
+                format: date
         languageStatus:
           type: string          
         plannedHours:
