@@ -23,18 +23,13 @@ tags:
 paths:
   /learnerProfile/{prn}:
     get:
+      security:
+        - bearerAuth: []    
       tags:
       - Learner Profile
       summary: Returns all learner data for the given PRN from and eventually from all establishments the learner has been resident in.
       operationId: getLearnerInfo
       parameters:
-        - name: X-Authorization
-          in: header
-          description: The JWT Bearer Token.
-          schema:
-            type: string
-            format: uuid
-          required: true      
         - name: prn
           in: path
           description: NOMIS Assigned Offender Number (Prisoner Identifier)
@@ -56,7 +51,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/LearnerProfileResponseObject'          
+                  $ref: '#/components/schemas/LearnerProfileDTO'          
         404:
           description: Learner record has not been found
           content:
@@ -74,18 +69,13 @@ paths:
 
   /learnerEducation/{prn}:
     get:
+      security:
+        - bearerAuth: []    
       tags:
       - Learner Education
       summary: Returns all courses the learner has been enrolled. This is going to contain all course entries, with no filtering on the course enrolment status, in order to provide a holistic view of the learner educational journey.
       operationId: getLearnerEducation
       parameters:
-        - name: X-Authorization
-          in: header
-          description: The JWT Bearer Token.
-          schema:
-            type: string
-            format: uuid
-          required: true      
         - name: prn
           in: path
           description: NOMIS Assigned Offender Number (Prisoner Identifier)
@@ -107,7 +97,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/LearnerEducationResponseObject'         
+                  $ref: '#/components/schemas/LearnerEducationDTO'         
                   
         404:
           description: Learner record has not been found
@@ -125,18 +115,13 @@ paths:
                   $ref: '#/components/schemas/NonSuccessResponseObject' 
   /latestLearnerAssessments/{prn}:
     get:
+      security:
+        - bearerAuth: []
       tags:
       - Learner Latest Assessments
       summary: Returns the most recent assessment of each type for a given learner.
       operationId: latestLearnerAssessments
       parameters:
-        - name: X-Authorization
-          in: header
-          description: The JWT Bearer Token.
-          schema:
-            type: string
-            format: uuid
-          required: true      
         - name: prn
           in: path
           description: NOMIS Assigned Offender Number (Prisoner Identifier)
@@ -151,7 +136,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/LatestLearnerAssessmentsResponseObject'
+                  $ref: '#/components/schemas/LearnerLatestAssessmentDTO'
         404:
           description: Learner record has not been found
           content:
@@ -167,8 +152,13 @@ paths:
                 items:
                   $ref: '#/components/schemas/NonSuccessResponseObject' 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
-    LearnerProfileResponseObject:
+    LearnerProfileDTO:
       type: object
       properties:
         prn:
@@ -193,53 +183,14 @@ components:
           type: array
           description: The assessment taken by the learner while in prison
           items:
-            type: object
-            properties:
-              qualificationType:
-                type: string
-                description: Assessment Type
-              qualtificationGrade:
-                type: string
-                description: Assessment Grade
-              assessmentDate:
-                type: string
-                format: date
-                description: The date the assessment has been taken
+            $ref: '#/components/schemas/AssessmentDTO'
         languageStatus:
           type: string
           description: To be confirmed
         plannedHours:
           type: string
           description: To be confirmed
-    LatestLearnerAssessmentsResponseObject:
-      type: object
-      properties:
-        prn:
-          type: string
-          description: NOMIS Offender Number
-        qualifications:
-          type: array
-          items:
-            type: object
-            properties:
-              establishmentId:
-                type: integer
-                format: int64
-                description: Establishment Id (Curious Identifier)
-              establishmentName:
-                type: string
-                description: Establishment Name (Curious Identifier)
-              qualificationType:
-                type: string
-                description: Assessment Type
-              qualtificationGrade:
-                type: string
-                description: Assessment Grade
-              assessmentDate:
-                type: string
-                format: date
-                description: The date the assessment has been taken
-    LearnerEducationResponseObject:
+    LearnerEducationDTO:
       type: object
       properties:
         prn:
@@ -378,6 +329,46 @@ components:
         withdrawlReasons:
           type: string
           description: Withdrawal reason (defaulted to Other) populated for the courses which are withdrawn
+    LearnerLatestAssessmentDTO:
+      type: object
+      properties:
+        prn:
+          type: string
+          description: NOMIS Offender Number
+        qualifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/LearnerAssessmentDTO'          
+    LearnerAssessmentDTO:
+      type: object
+      properties:
+        establishmentId:
+          type: integer
+          format: int64
+          description: Establishment Id (Curious Identifier)
+        establishmentName:
+          type: string
+          description: Establishment Name (Curious Identifier)
+        qualification:
+          $ref: '#/components/schemas/AssessmentDTO'                
+    AssessmentDTO:
+      type: object
+      properties:
+        qualificationType:
+          $ref: '#/components/schemas/QualificationType'
+        qualificationGrade:
+          type: string
+          description: Assessment Grade
+        assessmentDate:
+          type: string
+          format: date
+          description: The date the assessment has been taken
+    QualificationType:
+      type: string
+      enum:
+        - English
+        - Maths
+        - Digital Literacy
     NonSuccessResponseObject:
       type: object
       properties:
