@@ -23,18 +23,13 @@ tags:
 paths:
   /learnerProfile/{prn}:
     get:
+      security:
+        - bearerAuth: []    
       tags:
       - Learner Profile
       summary: Returns all learner data for the given PRN from and eventually from all establishments the learner has been resident in.
       operationId: getLearnerInfo
       parameters:
-        - name: X-Authorization
-          in: header
-          description: The JWT Bearer Token.
-          schema:
-            type: string
-            format: uuid
-          required: true      
         - name: prn
           in: path
           description: NOMIS Assigned Offender Number (Prisoner Identifier)
@@ -56,7 +51,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/LearnerProfileResponseObject'          
+                  $ref: '#/components/schemas/LearnerProfileDTO'          
         404:
           description: Learner record has not been found
           content:
@@ -74,18 +69,13 @@ paths:
 
   /learnerEducation/{prn}:
     get:
+      security:
+        - bearerAuth: []    
       tags:
       - Learner Education
       summary: Returns all courses the learner has been enrolled. This is going to contain all course entries, with no filtering on the course enrolment status, in order to provide a holistic view of the learner educational journey.
       operationId: getLearnerEducation
       parameters:
-        - name: X-Authorization
-          in: header
-          description: The JWT Bearer Token.
-          schema:
-            type: string
-            format: uuid
-          required: true      
         - name: prn
           in: path
           description: NOMIS Assigned Offender Number (Prisoner Identifier)
@@ -107,7 +97,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/LearnerEducationResponseObject'         
+                  $ref: '#/components/schemas/LearnerEducationDTO'         
                   
         404:
           description: Learner record has not been found
@@ -123,10 +113,52 @@ paths:
               schema:
                 items:
                   $ref: '#/components/schemas/NonSuccessResponseObject' 
-
+  /latestLearnerAssessments/{prn}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+      - Learner Latest Assessments
+      summary: Returns the most recent assessment of each type for a given learner.
+      operationId: latestLearnerAssessments
+      parameters:
+        - name: prn
+          in: path
+          description: NOMIS Assigned Offender Number (Prisoner Identifier)
+          required: true
+          schema:
+            type: string      
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LearnerLatestAssessmentDTO'
+        404:
+          description: Learner record has not been found
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/NonSuccessResponseObject'          
+        401:
+          description: Authentication required.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/NonSuccessResponseObject' 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
-    LearnerProfileResponseObject:
+    LearnerProfileDTO:
       type: object
       properties:
         prn:
@@ -135,32 +167,30 @@ components:
         establishmentId:
           type: integer
           format: int64
+          description: Establishment (prison) identifier
+        establishmentName:
+          type: string
+          description: Establishment (prison) name
         uln:
           type: string
         lddHealthProblem:
           type: string
+          description: Learner Self Assessment LDD and Health Problem
         priorAttainment:
           type: string
-        mathsQualnGrade:
-          type: string
-        mathsAssessmentDate:
-          type: string
-          format: date
-        englishQualnGrade:
-          type: string
-        englishAssessmentDate:
-          type: string
-          format: date
-        digitalLiteracyQualnGrade:
-          type: string
-        digitalLiteracyAssessmentDate:
-          type: string
-          format: date
+          description: Overall attainment level of learners that have achieved various combinations of qualifications.
+        qualifications:
+          type: array
+          description: The assessment taken by the learner while in prison
+          items:
+            $ref: '#/components/schemas/AssessmentDTO'
         languageStatus:
-          type: string          
+          type: string
+          description: To be confirmed
         plannedHours:
           type: string
-    LearnerEducationResponseObject:
+          description: To be confirmed
+    LearnerEducationDTO:
       type: object
       properties:
         prn:
@@ -169,91 +199,176 @@ components:
         establishmentId:
           type: integer
           format: int64
+          description: Establishment ID(Curious Identifier)
+        establishmentName:
+          type: string
+          description: Establishment Name(Curious Identifier)         
         a2LevelIndicator:
           type: boolean
+          description: Course Indicator from LRS
         accessHEIndicator:
           type: boolean
+          description: Course Indicator from LRS
         actualGLH:
           type: integer
+          description: Actual guided learning hours allocated to course
         aimSeqNumber:
           type: integer
+          description: The AIM sequence number of Course for a learner
         aLevelIndicator:
           type: boolean
+          description: Course Indicator from LRS
         asLevelIndicator:
           type: boolean
+          description: Course Indicator from LRS
         attendedGLH:
           type: integer
+          description: Actual attended Guided Learning Hours by learner on course
         completionStatus:
           type: string
+          description: Course completion Status(for e.g. continuing, completed, withdrawn, temporarily withdrawn)
         courseCode:
           type: string
+          description: Unique Course Code
         courseName:
           type: string
+          description: Course Name
         deliveryLocationPostCode:
-          type: string          
+          type: string
+          description: Prison Post code of a location where this course is getting delivered
         deliveryMethodType:
-          type: string 
+          type: string
+          description: Course Delivery Method (e.g. Blended Learning, Classroom Only Learning, Pack Only Learning)
         employmentOutcome:
-          type: string          
+          type: string
+          description: Employment Outcome gained status associated with the course ( with training , without training)
         functionalSkillsIndicator:
-          type: boolean 
+          type: boolean
+          description: Course Indicator from LRS
         fundingAdjustmentForPriorLearning:
-          type: integer          
+          type: integer
+          description: Funding adjustment hours from prior learning
         fundingModel:
-          type: string 
+          type: string
+          description: Funding Model for a Course (defaulted to Adult Skills)
         fundingType:
-          type: string          
+          type: string
+          description: Funding type for a course (e.g. DPS, PEF, The Clink etc.)
         gceIndicator:
-          type: boolean 
+          type: boolean
+          description: Course Indicator from LRS
         gcsIndicator:
-          type: boolean          
+          type: boolean
+          description: Course Indicator from LRS
         isAccredited:
-          type: boolean 
+          type: boolean
+          description: Indicates if the course is accredited
         keySkillsIndicator:
-          type: boolean    
+          type: boolean
+          description: Course Indicator from LRS
         learnAimRef:
           type: string
+          description: Course Indicator from LRS
         learnersAimType:
           type: string
+          description: Learners aim on Course (Programme aim, Component learning aim within programme etc.)
         learningActualEndDate:
           type: string
           format: date
+          description: Actual Course end date
         learningPlannedEndDate:
           type: string
           format: date
+          description: Planned Course end date
         learningStartDate:
           type: string
           format: date
+          description: Course start date
         level:
           type: string
+          description: Course Indicator from LRS
         lrsGLH:
           type: integer
+          description: Number of Guided Learning hours from LRS
         occupationalIndicator:
           type: boolean
+          description: Course Indicator from LRS
         outcome:
           type: string
+          description: Outcome of Course (e.g. Achieved, Partially Achieved etc.)
         outcomeGrade:
           type: string
+          description: Outcome grade of Course (e.g. Passed, Merit, Failed, Distinction etc.)
         prisonWithdrawalReason:
           type: string
+          description: Withdrawal reason if the learner withdraws from course (e.g. Moved to another establishment or release ,ill health etc.)
         qcfCertificateIndicator:
           type: boolean
+          description: Course Indicator from LRS
         qcfDiplomaIndicator:
           type: boolean
+          description: Course Indicator from LRS
         qcfIndicator:
           type: boolean
+          description: Course Indicator from LRS
         reviewed:
           type: boolean
+          description: Indicates if the withdrawal is reviewed
         sectorSubjectAreaTier2:
           type: string
+          description: Course Indicator from LRS
         subcontractedPartnershipUKPRN:
           type: integer
+          description: Course Indicator from LRS
         unitType:
           type: string
+          description: Course Indicator from LRS
         withdrawalReasonAgreed:
           type: boolean
+          description: Indicates if withdrawal is agreed or not
         withdrawlReasons:
           type: string
+          description: Withdrawal reason (defaulted to Other) populated for the courses which are withdrawn
+    LearnerLatestAssessmentDTO:
+      type: object
+      properties:
+        prn:
+          type: string
+          description: NOMIS Offender Number
+        qualifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/LearnerAssessmentDTO'          
+    LearnerAssessmentDTO:
+      type: object
+      properties:
+        establishmentId:
+          type: integer
+          format: int64
+          description: Establishment Id (Curious Identifier)
+        establishmentName:
+          type: string
+          description: Establishment Name (Curious Identifier)
+        qualification:
+          $ref: '#/components/schemas/AssessmentDTO'                
+    AssessmentDTO:
+      type: object
+      properties:
+        qualificationType:
+          $ref: '#/components/schemas/QualificationType'
+        qualificationGrade:
+          type: string
+          description: Assessment Grade
+        assessmentDate:
+          type: string
+          format: date
+          description: The date the assessment has been taken
+    QualificationType:
+      type: string
+      enum:
+        - English
+        - Maths
+        - Digital Literacy
     NonSuccessResponseObject:
       type: object
       properties:
