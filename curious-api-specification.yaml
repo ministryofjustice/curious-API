@@ -326,7 +326,7 @@ components:
         withdrawalReasonAgreed:
           type: boolean
           description: Indicates if withdrawal is agreed or not
-        withdrawlReasons:
+        withdrawalReasons:
           type: string
           description: Withdrawal reason (defaulted to Other) populated for the courses which are withdrawn
     LearnerLatestAssessmentDTO:
