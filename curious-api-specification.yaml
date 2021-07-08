@@ -190,6 +190,23 @@ components:
         plannedHours:
           type: string
           description: To be confirmed
+        rapidAssessmentDate:
+          type: string
+          format: date
+          description: Rapid Assessment Date
+        inDepthAssessmentDate:
+          type: string
+          format: date
+          description: In-Depth Assessment Date
+        primaryLLDDAndHealthProblem:
+          type: string
+          description: Primary LLDD and Health Problem
+        additionalLLDDAndHealthProblems:
+          type: array
+          description: Additional LLDD and Health Problems
+          items:
+            type: string
+          example: [Visual impairment, Hearing impairment, Disability affecting mobility, Dyslexia]
     LearnerEducationDTO:
       type: object
       properties:
@@ -202,7 +219,7 @@ components:
           description: Establishment ID(Curious Identifier)
         establishmentName:
           type: string
-          description: Establishment Name(Curious Identifier)         
+          description: Establishment Name(Curious Identifier)
         a2LevelIndicator:
           type: boolean
           description: Course Indicator from LRS
