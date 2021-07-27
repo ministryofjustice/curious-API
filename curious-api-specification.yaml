@@ -150,7 +150,50 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/NonSuccessResponseObject' 
+                  $ref: '#/components/schemas/NonSuccessResponseObject'
+  /learnerGoals/{prn}:
+    get:
+      security:
+        - bearerAuth: []    
+      tags:
+      - Learner Goals
+      summary: Returns all learner Goals for the given PRN
+      operationId: getLearnerGoals
+      parameters:
+        - name: prn
+          in: path
+          description: NOMIS Assigned Offender Number (Prisoner Identifier)
+          required: true
+          schema:
+            type: string      
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LearnerGoalDTO'          
+        404:
+          description: Learner record has not been found
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/NonSuccessResponseObject'          
+        401:
+          description: Authentication required.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/NonSuccessResponseObject'
+        403:
+          description: Access denied.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/NonSuccessResponseObject'                
 components:
   securitySchemes:
     bearerAuth:
@@ -380,6 +423,40 @@ components:
           type: string
           format: date
           description: The date the assessment has been taken
+    LearnerGoalDTO:
+      type: object
+      properties:
+        prn:
+          type: string
+          description: NOMIS Offender Number
+        employmentGoals:
+          type: array
+          description: Employment Goals
+          items:
+            type: string
+            maxLength: 100
+          maxItems: 3
+        personalGoals:
+          type: array
+          description: Personal Goals
+          items:
+            type: string
+            maxLength: 100
+          maxItems: 3
+        longTermGoals:
+          type: array
+          description: Long Term Goals
+          items:
+            type: string
+            maxLength: 100
+          maxItems: 2
+        shortTermGoals:
+          type: array
+          description: Short Term Goals
+          items:
+            type: string
+            maxLength: 100
+          maxItems: 2
     QualificationType:
       type: string
       enum:
