@@ -570,7 +570,7 @@ components:
         paged:
           type: boolean
         sort:
-          "$ref": "#/components/schemas/Sort"
+          $ref: '#/components/schemas/Sort'
         unpaged:
           type: boolean
     Page:
@@ -580,7 +580,7 @@ components:
         content:
           type: array
           items:
-            "$ref": "#/components/schemas/LearnerEducationDTO"
+            $ref: '#/components/schemas/LearnerEducationDTO'
         empty:
           type: boolean
         first:
@@ -594,12 +594,12 @@ components:
           type: integer
           format: int32
         pageable:
-          "$ref": "#/components/schemas/Pageable"
+          $ref: '#/components/schemas/Pageable'
         size:
           type: integer
           format: int32
         sort:
-          "$ref": "#/components/schemas/Sort"
+          $ref: '#/components/schemas/Sort'
         totalElements:
           type: integer
           format: int64
