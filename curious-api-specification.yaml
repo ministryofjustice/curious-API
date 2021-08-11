@@ -66,6 +66,13 @@ paths:
               schema:
                 items:
                   $ref: '#/components/schemas/NonSuccessResponseObject'
+        403:
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/NonSuccessResponseObject'
 
   /learnerEducation/{prn}:
     get:
@@ -89,6 +96,67 @@ paths:
           schema:
             type: integer
             format: int64
+        - name: courseName
+          in: query
+          description: Course Name
+          required: false
+          schema:
+            type: string
+        - name: courseCode
+          in: query
+          description: Course Code
+          required: false
+          schema:
+            type: string
+        - name: isAccredited
+          in: query
+          description: Accredited or not
+          required: false
+          schema:
+            type: boolean
+        - name: learningStartDate
+          in: query
+          description: Course Start Date
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: learningPlannedEndDate
+          in: query
+          description: Planned Course End Date
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: isCurrent
+          in: query
+          description: Whether the education is current or not
+          required: false
+          schema:
+            type: boolean
+        - name: page
+          in: query
+          description: The page to be returned
+          required: false
+          schema:
+            type: integer
+            format: int64
+          example: 0
+        - name: size
+          in: query
+          description: Number of items to be returned
+          required: false
+          schema:
+            type: integer
+            format: int64
+          example: 10
+        - name: sort
+          in: query
+          description: Parameter on which the records are to be sorted 
+          required: false
+          schema:
+            type: string
+          example: courseName, courseCode, learningStartDate, learningPlannedEndDate, isAccredited, actualGLH(learningStartDate,desc)
       responses:
         200:
           description: Success
@@ -97,7 +165,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/LearnerEducationDTO'         
+                  "$ref": "#/components/schemas/Page"        
                   
         404:
           description: Learner record has not been found
@@ -108,6 +176,13 @@ paths:
                   $ref: '#/components/schemas/NonSuccessResponseObject'          
         401:
           description: Authentication required.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/NonSuccessResponseObject'
+        403:
+          description: Access denied
           content:
             application/json:
               schema:
@@ -146,6 +221,13 @@ paths:
                   $ref: '#/components/schemas/NonSuccessResponseObject'          
         401:
           description: Authentication required.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/NonSuccessResponseObject'
+        403:
+          description: Access denied
           content:
             application/json:
               schema:
@@ -472,3 +554,65 @@ components:
           type: string
         httpStatusCode:
           type: integer
+    Pageable:
+      title: Pageable
+      type: object
+      properties:
+        offset:
+          type: integer
+          format: int64
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        paged:
+          type: boolean
+        sort:
+          $ref: '#/components/schemas/Sort'
+        unpaged:
+          type: boolean
+    Page:
+      title: Page
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/LearnerEducationDTO'
+        empty:
+          type: boolean
+        first:
+          type: boolean
+        last:
+          type: boolean
+        number:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        pageable:
+          $ref: '#/components/schemas/Pageable'
+        size:
+          type: integer
+          format: int32
+        sort:
+          $ref: '#/components/schemas/Sort'
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+    Sort:
+      title: Sort
+      type: object
+      properties:
+        empty:
+          type: boolean
+        sorted:
+          type: boolean
+        unsorted:
+          type: boolean
