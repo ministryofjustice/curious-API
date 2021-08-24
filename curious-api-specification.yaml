@@ -38,11 +38,10 @@ paths:
             type: string      
         - name: establishmentId
           in: query
-          description: The establishment the learner is or was resident in.
+          description: NOMIS Establishment ID
           required: false
           schema:
-            type: integer
-            format: int64
+            type: string
       responses:
         200:
           description: Success
@@ -91,11 +90,10 @@ paths:
             type: string      
         - name: establishmentId
           in: query
-          description: The establishment the learner is or was resident in.
+          description: NOMIS Establishment ID
           required: false
           schema:
-            type: integer
-            format: int64
+            type: string
         - name: courseName
           in: query
           description: Course Name
@@ -290,12 +288,11 @@ components:
           type: string
           description: NOMIS Offender Number
         establishmentId:
-          type: integer
-          format: int64
-          description: Establishment (prison) identifier
+          type: string
+          description: NOMIS Establishment ID
         establishmentName:
           type: string
-          description: Establishment (prison) name
+          description: NOMIS Establishment Name
         uln:
           type: string
         lddHealthProblem:
@@ -323,12 +320,12 @@ components:
           type: string
           format: date
           description: In-Depth Assessment Date
-        primaryLLDDAndHealthProblem:
+        primaryLDDAndHealthProblem:
           type: string
-          description: Primary LLDD and Health Problem
-        additionalLLDDAndHealthProblems:
+          description: Primary LDD and Health Problem
+        additionalLDDAndHealthProblems:
           type: array
-          description: Additional LLDD and Health Problems
+          description: Additional LDD and Health Problems
           items:
             type: string
           example: [Visual impairment, Hearing impairment, Disability affecting mobility, Dyslexia]
@@ -339,12 +336,11 @@ components:
           type: string
           description: NOMIS Offender Number
         establishmentId:
-          type: integer
-          format: int64
-          description: Establishment ID(Curious Identifier)
+          type: string
+          description: NOMIS Establishment ID
         establishmentName:
           type: string
-          description: Establishment Name(Curious Identifier)
+          description: NOMIS Establishment Name
         a2LevelIndicator:
           type: boolean
           description: Course Indicator from LRS
@@ -485,12 +481,11 @@ components:
       type: object
       properties:
         establishmentId:
-          type: integer
-          format: int64
-          description: Establishment Id (Curious Identifier)
+          type: string
+          description: NOMIS Establishment ID
         establishmentName:
           type: string
-          description: Establishment Name (Curious Identifier)
+          description: NOMIS Establishment Name
         qualification:
           $ref: '#/components/schemas/AssessmentDTO'                
     AssessmentDTO:
