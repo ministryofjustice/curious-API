@@ -281,7 +281,7 @@ paths:
       tags:
       - Learner Employability Skills
       summary: Returns all employability skills associated with given learner.
-      operationId: getEmployabiltiySkills
+      operationId: getEmployabilitySkills
       parameters:
         - name: prn
           in: path
