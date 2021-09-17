@@ -301,20 +301,6 @@ paths:
           required: false
           schema:
             type: string
-        - name: activityStartDate
-          in: query
-          description: Activity Start Date
-          required: false
-          schema:
-            type: string
-            format: date
-        - name: activityEndDate
-          in: query
-          description: Activity End Date
-          required: false
-          schema:
-            type: string
-            format: date    
         - name: page
           in: query
           description: The page to be returned
