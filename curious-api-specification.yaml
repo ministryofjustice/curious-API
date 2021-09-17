@@ -273,7 +273,116 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/NonSuccessResponseObject'                
+                  $ref: '#/components/schemas/NonSuccessResponseObject'   
+  /learnerEmployabilitySkills/{prn}:
+    get:
+      security:
+        - bearerAuth: []    
+      tags:
+      - Learner Employability Skills
+      summary: Returns all employability skills associated with given learner.
+      operationId: getEmployabilitySkills
+      parameters:
+        - name: prn
+          in: path
+          description: NOMIS Assigned Offender Number (Prisoner Identifier)
+          required: true
+          schema:
+            type: string      
+        - name: establishmentId
+          in: query
+          description: NOMIS Establishment ID
+          required: false
+          schema:
+            type: string
+        - name: employabilitySkill
+          in: query
+          description: Employability Skill
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: The page to be returned
+          required: false
+          schema:
+            type: integer
+            format: int64
+          example: 0
+        - name: size
+          in: query
+          description: Number of items to be returned
+          required: false
+          schema:
+            type: integer
+            format: int64
+          example: 10
+        - name: sort
+          in: query
+          description: Parameter on which the records are to be sorted 
+          required: false
+          schema:
+            type: string
+          example: employabilitySkill, activityStartDate, activityEndDate, (activityStartDate,desc)
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/LearnerEmployabilitySkillsDTO"
+                  empty:
+                    type: boolean
+                  first:
+                    type: boolean
+                  last:
+                    type: boolean
+                  number:
+                    type: integer
+                    format: int32
+                  numberOfElements:
+                    type: integer
+                    format: int32
+                  pageable:
+                    "$ref": "#/components/schemas/Pageable"
+                  size:
+                    type: integer
+                    format: int32
+                  sort:
+                    "$ref": "#/components/schemas/Sort"
+                  totalElements:
+                    type: integer
+                    format: int64
+                  totalPages:
+                    type: integer
+                    format: int32        
+                  
+        404:
+          description: Learner record has not been found
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/NonSuccessResponseObject'          
+        401:
+          description: Authentication required.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/NonSuccessResponseObject'
+        403:
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/NonSuccessResponseObject'
 components:
   securitySchemes:
     bearerAuth:
@@ -534,6 +643,38 @@ components:
             type: string
             maxLength: 100
           maxItems: 2
+    LearnerEmployabilitySkillsDTO:
+     type: object
+     properties:
+      prn:
+        type: string
+        description: NOMIS Offender Number
+      establishmentId:
+        type: string
+        description: NOMIS Establishment ID
+      establishmentName:
+        type: string
+        description: NOMIS Establishment Name
+      employabilitySkill:
+        type: string
+        description: Learner Employability Skill (Adaptability, Attitudes and Behaviour, Communication, Creativity, Initiative, Organisation, Planning, Problem Solving, Reliability, Timekeeping)
+      activityStartDate:
+        type: string
+        format: date
+        description: Activity Start Date
+      activityEndDate:
+        type: string
+        format: date
+        description: Activity End Date
+      deliveryLocationPostCode:
+        type: string
+        description: Prison Post code of a location where this skill is under taken
+      deliveryMethodType:
+        type: string
+        description: Skill Delivery Method (e.g. Face to Face, Blended Learning, Classroom Only Learning, Pack Only Learning)
+      activityLocation:
+        type: string
+        description: Activity Location
     QualificationType:
       type: string
       enum:
