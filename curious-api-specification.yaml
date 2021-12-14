@@ -675,6 +675,23 @@ components:
       activityLocation:
         type: string
         description: Activity Location
+      reviews:
+        type: array
+        items:
+          $ref: '#/components/schemas/EmployabilitySkillsReviewDTO'
+    EmployabilitySkillsReviewDTO:
+     type: object
+     properties:
+       reviewDate:
+         type: string
+         format: date
+         description: Date when the employability skill was reviewed
+       currentProgression:
+         type: string
+         description: Employability Skill progression status and score on a scale of 1 to 5 (1 - Not demonstrated, 5 - Outstanding demonstration)
+       comment:
+         type: string
+         description: Any comments on the review
     QualificationType:
       type: string
       enum:
