@@ -14,6 +14,7 @@ servers:
         default: test # Production
         enum:
           - test      # Test
+          - preprod   # Preprod
           - live      # Production
 tags:
 - name: Learner Profile
@@ -383,6 +384,57 @@ paths:
               schema:
                 items:
                   $ref: '#/components/schemas/NonSuccessResponseObject'
+  /learnerNeurodivergence/{prn}:
+    get:
+      security:
+        - bearerAuth: []    
+      tags:
+      - Learner Neurodivergence Info
+      summary: Returns all learner Neurodivergence info
+      operationId: getLearnerNeurodivergence
+      parameters:
+        - name: prn
+          in: path
+          description: NOMIS Assigned Offender Number (Prisoner Identifier)
+          required: true
+          schema:
+            type: string
+        - name: establishmentId
+          in: query
+          description: NOMIS Establishment ID
+          required: false
+          schema:
+            type: string    
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LearnerNeurodivergenceDTO'       
+        404:
+          description: Learner record has not been found
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/NonSuccessResponseObject'          
+        401:
+          description: Authentication required.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/NonSuccessResponseObject'
+        403:
+          description: Access denied.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/NonSuccessResponseObject'  
 components:
   securitySchemes:
     bearerAuth:
@@ -692,6 +744,45 @@ components:
        comment:
          type: string
          description: Any comments on the review
+    LearnerNeurodivergenceDTO:
+      type: object
+      properties:
+        prn:
+          type: string
+          description: NOMIS Offender Number
+        establishmentId:
+          type: string
+          description: NOMIS Establishment ID
+        establishmentName:
+          type: string
+          description: NOMIS Establishment Name
+        neurodivergenceSelfDeclared:
+          type: array
+          description: Learner Neurodivergence Self-Declared
+          items:
+            type: string
+        selfDeclaredDate:
+          type: string
+          format: date
+          description: Self-Declared Date
+        neurodivergenceAssessed:
+          type: array
+          description: Learner Neurodivergence Assessed
+          items:
+            type: string
+        assessmentDate:
+          type: string
+          format: date
+          description: Assessment Date
+        neurodivergenceSupport:
+          type: array
+          description: Learner Neurodivergence Support
+          items:
+            type: string
+        supportDate:
+          type: string
+          format: date
+          description: Support Date
     QualificationType:
       type: string
       enum:
