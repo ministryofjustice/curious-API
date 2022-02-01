@@ -398,7 +398,13 @@ paths:
           description: NOMIS Assigned Offender Number (Prisoner Identifier)
           required: true
           schema:
-            type: string   
+            type: string
+        - name: establishmentId
+          in: query
+          description: NOMIS Establishment ID
+          required: false
+          schema:
+            type: string    
       responses:
         200:
           description: Success
