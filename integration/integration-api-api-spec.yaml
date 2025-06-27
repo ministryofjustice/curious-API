@@ -1,0 +1,350 @@
+openapi: "3.0.4"
+info:
+  title: Education APIs on HMPPS Integration API
+  version: 0.0.3
+  description: |
+    Design specification for the API endpoints of Curious Integration with HMPPS
+
+    This design specification is an illustration of the HMPPS Integration API for Curious. This is NOT the actual OpenAPI specification of HMPPS Integration API.
+
+    Read more at [HMPPS Integration API](https://ministryofjustice.github.io/hmpps-integration-api/documentation/api/index.html)
+
+servers:
+  - url: https://dev.integration-api.hmpps.service.justice.gov.uk
+    description: HMPPS Integration API - Development server
+  - url: https://preprod.integration-api.hmpps.service.justice.gov.uk
+    description: HMPPS Integration API - Pre-production server
+  - url: https://integration-api.hmpps.service.justice.gov.uk
+    description: HMPPS Integration API - Production server
+
+paths:
+  /v1/persons/{hmppsId}/education/assessments:
+    get:
+      summary: Returns education assessments of a person
+      description: Returns education assessment (eligibility, etc.) of a person
+      tags:
+        - Education
+        - Persons
+      parameters:
+        - $ref: "#/components/parameters/hmppsIdPathParameter"
+      responses:
+        "200":
+          $ref: "#/components/responses/EducationAssessmentsResponse"
+        "400":
+          description: The failure status is set when the request is invalid. An error response will be provided.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/404ErrorResponse"
+
+  /v1/persons/{hmppsId}/prisoner-base-location:
+    get:
+      summary: Returns prisoner's base location
+      tags:
+        - Persons
+      parameters:
+        - $ref: "#/components/parameters/hmppsIdPathParameter"
+      responses:
+        "200":
+          $ref: "#/components/responses/PrisonerBaseLocationResponse"
+        "400":
+          description: The failure status is set when the request is invalid. An error response will be provided.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/404ErrorResponse"
+
+  /v1/prison/prisoners/{hmppsId}:
+    get:
+      summary: Returns a single prisoners details given an hmppsId, does not query for a probation person.
+      description: |
+        Applicable filters:
+        * prisons
+
+        These data will be included for Curious:
+        - firstName, lastName
+        - dateOfBirth
+        - gender
+        - ethnicity
+        - aliases(array)
+          * firstName
+          * lastName
+          * dateOfBirth
+          * gender
+        - ethnicity
+        - identifiers
+          * nomisNumber
+        - receptionDate
+        - prisonId, prisonName
+
+
+        Others will not be supplied at response
+      tags: [Prisoners]
+      parameters:
+        - in: path
+          name: hmppsId
+          description: The HMPPS ID of the person
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/PrisonerResponse"
+
+        "400":
+          description: The HMPPS ID provided has an invalid format.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequest"
+              example:
+                status: 400
+                userMessage: "Validation failure: Invalid HMPPS ID: XYZ123ABC"
+                developerMessage: "Invalid HMPPS ID: XYZ123ABC"
+        "404":
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PersonNotFound"
+
+components:
+  responses:
+    404ErrorResponse:
+      description: The failure status is set when the requested entity is not found.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          examples:
+            notFound:
+              summary: Person not found in prison
+              value:
+                status: 404
+                developerMessage: "404 Not found error: Could not find person with HMPPS id: 12345678ABC"
+                userMessage: "Could not find person with HMPPS id: 12345678ABC"
+    EducationAssessmentsResponse:
+      description: Successfully found education assessments.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/EducationAssessments"
+          examples:
+            basicSkillsAssessmentRequired:
+              summary: assessment is required
+              value:
+                data:
+                  basicSkillsAssessmentRequired: true
+            assessmentNotRequired:
+              summary: assessment is NOT required
+              value:
+                data:
+                  basicSkillsAssessmentRequired: false
+    PrisonerBaseLocationResponse:
+      description: Successfully found education assessments.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PrisonerBaseLocation"
+
+    PrisonerResponse:
+      description: Successfully found a prisoner with the provided HMPPS ID.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DataResponsePersonInPrison"
+
+  schemas:
+    EducationAssessments:
+      properties:
+        data:
+          type: object
+          properties:
+            basicSkillsAssessmentRequired:
+              type: boolean
+          required: [basicSkillsAssessmentRequired]
+      required: [data]
+    PrisonerBaseLocation:
+      properties:
+        data:
+          type: object
+          properties:
+            inOutStatus:
+              description: In/Out Status
+              type: string
+              enum: [IN, OUT, TRN]
+              example: IN
+            prisonId:
+              type: string
+              example: MDI
+            lastPrisonId:
+              description: The last prison for the prisoner (which is the same as the prisonId if they are still inside prison)
+              type: string
+              example: MDI
+            lastMovementTypeCode:
+              description: Last Movement Type Code of prisoner
+              type: string
+              example: REL
+            lastMovementReasonCode:
+              description: Last Movement Reason of prisoner
+              type: string
+              example: CA
+      required: [data]
+
+    ErrorResponse:
+      properties:
+        developerMessage:
+          type: string
+        errorCode:
+          type: integer
+        status:
+          type: integer
+        userMessage:
+          type: string
+    PersonInPrison:
+      properties:
+        firstName:
+          type: string
+          description: First name
+          example: John
+        lastName:
+          type: string
+          description: Last name
+          example: Morgan
+        middleName:
+          type: string
+          description: Middle name,
+          example: John
+        dateOfBirth:
+          type: string
+          format: date
+          description: Date of birth
+          example: "1965-12-01"
+        gender:
+          type: string
+          description: Gender
+          example: "Male"
+        ethnicity:
+          type: string
+          description: Ethnicity
+          example: "White: Eng./Welsh/Scot./N.Irish/British"
+        aliases:
+          type: array
+          items:
+            $ref: "#/components/schemas/Alias"
+        identifiers:
+          $ref: "#/components/schemas/Identifiers"
+        pncId:
+          type: string
+          description: An identifier from the Police National Computer (PNC)
+        category:
+          type: string
+          description: Category
+          example: C
+        csra:
+          type: string
+          description: Cell sharing risk assessment
+          example: HIGH
+        receptionDate:
+          type: string
+          description: Date prisoner was received into the prison
+          example: "2021-12-01"
+        status:
+          type: string
+          description: Status of the prisoner
+          example: ACTIVE IN
+        prisonId:
+          type: string
+          description: Prison ID
+          example: MDI
+        prisonName:
+          type: string
+          description: Name of the prison
+          example: HMP Leeds
+        cellLocation:
+          type: string
+          description: In prison cell location
+          example: "A-1-002"
+        youthOffender:
+          type: boolean
+          description: Is the prisoner a youth offender
+          example: false
+      required: [aliases, firstName, identifiers, lastName]
+    DataResponsePersonInPrison:
+      properties:
+        data:
+          $ref: "#/components/schemas/PersonInPrison"
+      required: [data]
+    Alias:
+      properties:
+        firstName:
+          type: string
+          description: first name
+          example: "John"
+        lastName:
+          type: string
+          description: last name
+          example: "Marston"
+        middleName:
+          type: string
+          description: middle name
+          example: "Marston"
+        dateOfBirth:
+          type: string
+          format: date,
+          description: date of birth
+          example: "1965-12-01"
+        gender:
+          type: string
+          description: gender
+          example: Male
+        ethnicity:
+          type: string
+          description: ethnicity
+          example: "Prefer not to say"
+      required: [firstName, lastName]
+    Identifiers:
+      description: "Other unique identifiers for a person."
+      properties:
+        nomisNumber:
+          type: string
+          description: "A prisoner identifier from NOMIS."
+          example: "A1234AA"
+        croNumber:
+          type: string
+          description: "A Criminal Records Office identifier from National Identification Service (NIS) or National Automated Fingerprint Identification System (NAFIS)."
+          example: "SF80/655108T"
+        deliusCrn:
+          type: string
+          description: "A Case Reference Number from Delius."
+          example: "X00001"
+    BadRequest:
+      properties:
+        status:
+          example: 400
+        userMessage:
+          example: "Validation failure: No query parameters specified."
+        developerMessage:
+          example: "No query parameters specified."
+    PersonNotFound:
+      description: "Failed to find a person with the provided HMPPS ID."
+      properties:
+        status:
+          example: 404
+        userMessage:
+          example: "404 Not found error: Could not find person with HMPPS id: 2003/0011991D."
+        developerMessage:
+          example: "Could not find person with HMPPS id: 2003/0011991D."
+
+  parameters:
+    hmppsIdPathParameter:
+      name: hmppsId
+      description: The HMPPS ID of the person
+      schema:
+        type: string
+      in: path
+      required: true

@@ -1,0 +1,106 @@
+asyncapi: 3.0.0
+info:
+  title: Curious Integration at HMPPS Integration Events
+  version: 0.0.2
+  description: |
+    Events to be sent to Curious
+
+    This design specification is an illustration of the HMPPS Integration Events for Curious. This is NOT the actual AsyncAPI specification of HMPPS Integration Events.
+
+    Read more at [HMPPS Integration Events](https://ministryofjustice.github.io/hmpps-integration-api/documentation/events/index.html#hmpps-integration-events)
+  license:
+    name: MIT license
+    url: https://raw.githubusercontent.com/ministryofjustice/hmpps-integration-events/refs/heads/main/LICENSE
+  externalDocs:
+    description: HMPPS Integration Events
+    url: https://ministryofjustice.github.io/hmpps-integration-api/documentation/events/index.html#hmpps-integration-events
+  # tags:
+  #   - [object Object]
+
+defaultContentType: application/json
+
+channels:
+  hmpps-integration-events:
+    description: HMPPS Integration Events SNS topic
+    bindings:
+      sns:
+        name: integrationevents
+    messages:
+      PRISONER_CHANGED:
+        $ref: "#/components/messages/PrisonerChanged"
+      PRISONER_BAPRISONER_BASE_LOCATION_CHANGED:
+        $ref: "#/components/messages/PrisonerBaseLocationChanged"
+      PERSON_BSA_ELIGIBILITY_CHANGED:
+        $ref: "#/components/messages/PersonEducationAssessmentsChanged"
+
+operations:
+  publish-event:
+    title: Publish event
+    summary: Publish integration Event
+    action: send
+    channel:
+      $ref: "#/channels/hmpps-integration-events"
+    # messages:
+    #   - $ref: '#/channals/hmpps-integration-events/'
+
+components:
+  messages:
+    PrisonerChanged:
+      title: Prisoner changed
+      summary: "Event `PRISONER_CHANGED`"
+      payload:
+        $ref: "#/components/schemas/EventNotification"
+      examples:
+        - payload:
+            eventId: 12345
+            hmppsId: A123456
+            eventType: PRISONER_CHANGED
+            url: "https://dev.integration-api.hmpps.service.justice.gov.uk/v1/prison/prisoners/A123456"
+    PrisonerBaseLocationChanged:
+      title: Prisoner base location changed
+      summary: "Event `PRISONER_BASE_LOCATION_CHANGED`"
+      payload:
+        $ref: "#/components/schemas/EventNotification"
+      examples:
+        - payload:
+            eventId: 12345
+            hmppsId: A123456
+            eventType: PRISONER_BASE_LOCATION_CHANGED
+            prisonId: MDI
+            url: "https://dev.integration-api.hmpps.service.justice.gov.uk/v1/persons/A123456/prisoner-base-location"
+    PersonEducationAssessmentsChanged:
+      title: Person education assessments changed
+      summary: "Event `PERSON_EDUCATION_ASSESSMENTS_CHANGED`"
+      payload:
+        $ref: "#/components/schemas/EventNotification"
+      examples:
+        - payload:
+            eventId: 12345
+            hmppsId: A123456
+            eventType: PERSON_EDUCATION_ASSESSMENTS_CHANGED
+            url: "https://dev.integration-api.hmpps.service.justice.gov.uk/v1/persons/A123456/education/assessments"
+  schemas:
+    EventNotification:
+      type: object
+      title: Event Notification
+      properties:
+        eventId:
+          type: integer
+          format: int64
+        hmppsId:
+          type: string
+          title: HMPPS ID
+        eventType:
+          type: string
+          title: Event type
+          description: type of integration event
+        prisonId:
+          type: string
+          title: Prison ID
+        url:
+          type: string
+          description: The API endpoint associated with this event
+        lastModifiedDateTime:
+          type: string
+          format: dateTime
+      required: [eventId, eventType, url, lastModifiedDateTime]
