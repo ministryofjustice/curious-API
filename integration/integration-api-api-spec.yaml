@@ -145,7 +145,7 @@ components:
                 data:
                   basicSkillsAssessmentRequired: false
     PrisonerBaseLocationResponse:
-      description: Successfully found education assessments.
+      description: Successfully found prisoner's base location.
       content:
         application/json:
           schema:
