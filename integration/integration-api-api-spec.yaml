@@ -1,7 +1,7 @@
 openapi: "3.0.4"
 info:
   title: Education APIs on HMPPS Integration API
-  version: 0.0.3
+  version: 0.0.4
   description: |
     Design specification for the API endpoints of Curious Integration with HMPPS
 
@@ -150,6 +150,24 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/PrisonerBaseLocation"
+          examples:
+            reception:
+              summary: Received into prison
+              value: 
+                data:
+                  inPrison: true
+                  prisonId: "MDI"
+                  lastPrisonId: "MDI"
+                  lastMovementType: "Admission"
+                  receptionDate: "2025-01-01"
+            release:
+              summary: Released from prison
+              value:
+                data:
+                  inPrison: false
+                  lastPrisonId: "MDI"
+                  lastMovementType: "Release"
+                  receptionDate: "2025-01-01"
 
     PrisonerResponse:
       description: Successfully found a prisoner with the provided HMPPS ID.
@@ -174,10 +192,9 @@ components:
           type: object
           properties:
             inOutStatus:
-              description: In/Out Status
-              type: string
-              enum: [IN, OUT, TRN]
-              example: IN
+              description: In prison or not
+              type: boolean
+              example: true
             prisonId:
               type: string
               example: MDI
@@ -185,14 +202,16 @@ components:
               description: The last prison for the prisoner (which is the same as the prisonId if they are still inside prison)
               type: string
               example: MDI
-            lastMovementTypeCode:
-              description: Last Movement Type Code of prisoner
+            lastMovementType:
+              description: Last Movement Type of prisoner
               type: string
-              example: REL
-            lastMovementReasonCode:
-              description: Last Movement Reason of prisoner
+              enum: [Admission, Release, Transfers]
+              example: Release
+            receptionDate:
+              description: Date prisoner was received into the prison
               type: string
-              example: CA
+              format: date
+              example: 2025-04-01
       required: [data]
 
     ErrorResponse:
