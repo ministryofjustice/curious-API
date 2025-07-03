@@ -191,7 +191,7 @@ components:
         data:
           type: object
           properties:
-            inOutStatus:
+            inPrison:
               description: In prison or not
               type: boolean
               example: true
