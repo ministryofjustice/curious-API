@@ -205,7 +205,7 @@ components:
             lastMovementType:
               description: Last Movement Type of prisoner
               type: string
-              enum: [Admission, Release, Transfers]
+              enum: [Admission, Release, Transfers, Court, "Temporary Absence"]
               example: Release
             receptionDate:
               description: Date prisoner was received into the prison
