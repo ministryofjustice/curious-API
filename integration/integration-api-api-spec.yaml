@@ -88,7 +88,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PersonNotFound"
-        "500": 
+        "500":
           description: "Internal Server Error"
           content:
             application/json:
@@ -207,7 +207,7 @@ components:
           type: integer
         userMessage:
           type: string
-    
+
     Person:
       properties:
         firstName:
@@ -259,7 +259,7 @@ components:
         exclusionMessage:
           type: string
       required: [aliases, firstName, identifiers, lastName]
-    
+
     DataResponseOffenderSearchResponse:
       properties:
         data:
@@ -267,7 +267,7 @@ components:
       required: [data]
     OffenderSearchResponse:
       properties:
-        prisonerOffenderSearch: 
+        prisonerOffenderSearch:
           $ref: "#/components/schemas/Person"
         probationOffenderSearch:
           $ref: "#/components/schemas/PersonOnProbation"
@@ -308,14 +308,8 @@ components:
           type: boolean
         exclusionMessage:
           type: string
-      required: [
-        "aliases",
-        "firstName",
-        "identifiers",
-        "lastName",
-        "underActiveSupervision"
-      ]
-    
+      required: ["aliases", "firstName", "identifiers", "lastName", "underActiveSupervision"]
+
     Alias:
       properties:
         firstName:
@@ -363,25 +357,25 @@ components:
       properties:
         phoneNumbers:
           type: array
-          items: 
+          items:
             $ref: "#/components/schemas/PhoneNumber"
         emails:
           type: array
           description: A list of email addresses
-          items: 
+          items:
             type: string
             example: some.one@example.com
     PhoneNumber:
-        type: object
-        properties:
-          number:
-            type: string
-            description: A phone number
-            example: 079123456789
-          type:
-            type: string
-            description: The type of number
-            example: TELEPHONE
+      type: object
+      properties:
+        number:
+          type: string
+          description: A phone number
+          example: 079123456789
+        type:
+          type: string
+          description: The type of number
+          example: TELEPHONE
 
     BadRequest:
       properties:
