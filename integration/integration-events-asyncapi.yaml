@@ -26,9 +26,9 @@ channels:
       sns:
         name: integrationevents
     messages:
-      PRISONER_CHANGED:
-        $ref: "#/components/messages/PrisonerChanged"
-      PRISONER_BAPRISONER_BASE_LOCATION_CHANGED:
+      PERSON_STATUS_CHANGED:
+        $ref: "#/components/messages/PersonStatusChanged"
+      PRISONER_PRISONER_BASE_LOCATION_CHANGED:
         $ref: "#/components/messages/PrisonerBaseLocationChanged"
       PERSON_BSA_ELIGIBILITY_CHANGED:
         $ref: "#/components/messages/PersonEducationAssessmentsChanged"
@@ -45,17 +45,17 @@ operations:
 
 components:
   messages:
-    PrisonerChanged:
-      title: Prisoner changed
-      summary: "Event `PRISONER_CHANGED`"
+    PersonStatusChanged:
+      title: Person status changed
+      summary: "Event `PERSON_STATUS_CHANGED`"
       payload:
         $ref: "#/components/schemas/EventNotification"
       examples:
         - payload:
             eventId: 12345
             hmppsId: A123456
-            eventType: PRISONER_CHANGED
-            url: "https://dev.integration-api.hmpps.service.justice.gov.uk/v1/prison/prisoners/A123456"
+            eventType: PERSON_STATUS_CHANGED
+            url: "https://dev.integration-api.hmpps.service.justice.gov.uk/v1/persons/A123456"
     PrisonerBaseLocationChanged:
       title: Prisoner base location changed
       summary: "Event `PRISONER_BASE_LOCATION_CHANGED`"
