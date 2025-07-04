@@ -58,14 +58,12 @@ paths:
         "404":
           $ref: "#/components/responses/404ErrorResponse"
 
-  /v1/prison/prisoners/{hmppsId}:
+  /v1/persons/{encodedHmppsId}:
     get:
-      summary: Returns a single prisoners details given an hmppsId, does not query for a probation person.
+      summary: Returns a person.
       description: |
-        Applicable filters:
-        * prisons
-
-        These data will be included for Curious:
+        These data will be included for Curious. <br>
+        at data.prisonerOffenderSearch: 
         - firstName, lastName
         - dateOfBirth
         - gender
@@ -78,39 +76,24 @@ paths:
         - ethnicity
         - identifiers
           * nomisNumber
-        - receptionDate
-        - prisonId, prisonName
-
-
-        Others will not be supplied at response
-      tags: [Prisoners]
+      tags: [Persons]
       parameters:
-        - in: path
-          name: hmppsId
-          description: The HMPPS ID of the person
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/encodedHmppsIdPathParameter"
       responses:
         "200":
-          $ref: "#/components/responses/PrisonerResponse"
-
-        "400":
-          description: The HMPPS ID provided has an invalid format.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/BadRequest"
-              example:
-                status: 400
-                userMessage: "Validation failure: Invalid HMPPS ID: XYZ123ABC"
-                developerMessage: "Invalid HMPPS ID: XYZ123ABC"
+          $ref: "#/components/responses/PersonResponse"
         "404":
           description: "Not Found"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/PersonNotFound"
+        "500": 
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
 
 components:
   responses:
@@ -153,7 +136,7 @@ components:
           examples:
             reception:
               summary: Received into prison
-              value: 
+              value:
                 data:
                   inPrison: true
                   prisonId: "MDI"
@@ -169,12 +152,12 @@ components:
                   lastMovementType: "Release"
                   receptionDate: "2025-01-01"
 
-    PrisonerResponse:
-      description: Successfully found a prisoner with the provided HMPPS ID.
+    PersonResponse:
+      description: Successfully found a person with the provided HMPPS ID.
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/DataResponsePersonInPrison"
+            $ref: "#/components/schemas/DataResponseOffenderSearchResponse"
 
   schemas:
     EducationAssessments:
@@ -224,7 +207,8 @@ components:
           type: integer
         userMessage:
           type: string
-    PersonInPrison:
+    
+    Person:
       properties:
         firstName:
           type: string
@@ -260,44 +244,78 @@ components:
         pncId:
           type: string
           description: An identifier from the Police National Computer (PNC)
-        category:
+        hmppsId:
           type: string
-          description: Category
-          example: C
-        csra:
-          type: string
-          description: Cell sharing risk assessment
-          example: HIGH
-        receptionDate:
-          type: string
-          description: Date prisoner was received into the prison
-          example: "2021-12-01"
-        status:
-          type: string
-          description: Status of the prisoner
-          example: ACTIVE IN
-        prisonId:
-          type: string
-          description: Prison ID
-          example: MDI
-        prisonName:
-          type: string
-          description: Name of the prison
-          example: HMP Leeds
-        cellLocation:
-          type: string
-          description: In prison cell location
-          example: "A-1-002"
-        youthOffender:
+          description: HMPPS identifier
+          example: "2008/0545166T"
+        contactDetails:
+          $ref: "#/components/schemas/ContactDetailsWithEmailAndPhone"
+        currentRestriction:
           type: boolean
-          description: Is the prisoner a youth offender
-          example: false
+        restrictionMessage:
+          type: string
+        currentExclusion:
+          type: boolean
+        exclusionMessage:
+          type: string
       required: [aliases, firstName, identifiers, lastName]
-    DataResponsePersonInPrison:
+    
+    DataResponseOffenderSearchResponse:
       properties:
         data:
-          $ref: "#/components/schemas/PersonInPrison"
+          $ref: "#/components/schemas/OffenderSearchResponse"
       required: [data]
+    OffenderSearchResponse:
+      properties:
+        prisonerOffenderSearch: 
+          $ref: "#/components/schemas/Person"
+        probationOffenderSearch:
+          $ref: "#/components/schemas/PersonOnProbation"
+    PersonOnProbation:
+      properties:
+        underActiveSupervision:
+          type: boolean
+        firstName:
+          type: string
+        lastName:
+          type: string
+        middleName:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        gender:
+          type: string
+        ethnicity:
+          type: string
+        aliases:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Alias"
+        identifiers:
+          $ref: "#/components/schemas/Identifiers"
+        pncId:
+          type: string
+        hmppsId:
+          type: string
+        contactDetails:
+          $ref: "#/components/schemas/ContactDetailsWithEmailAndPhone"
+        currentRestriction:
+          type: boolean
+        restrictionMessage:
+          type: string
+        currentExclusion:
+          type: boolean
+        exclusionMessage:
+          type: string
+      required: [
+        "aliases",
+        "firstName",
+        "identifiers",
+        "lastName",
+        "underActiveSupervision"
+      ]
+    
     Alias:
       properties:
         firstName:
@@ -341,6 +359,30 @@ components:
           type: string
           description: "A Case Reference Number from Delius."
           example: "X00001"
+    ContactDetailsWithEmailAndPhone:
+      properties:
+        phoneNumbers:
+          type: array
+          items: 
+            $ref: "#/components/schemas/PhoneNumber"
+        emails:
+          type: array
+          description: A list of email addresses
+          items: 
+            type: string
+            example: some.one@example.com
+    PhoneNumber:
+        type: object
+        properties:
+          number:
+            type: string
+            description: A phone number
+            example: 079123456789
+          type:
+            type: string
+            description: The type of number
+            example: TELEPHONE
+
     BadRequest:
       properties:
         status:
@@ -358,6 +400,15 @@ components:
           example: "404 Not found error: Could not find person with HMPPS id: 2003/0011991D."
         developerMessage:
           example: "Could not find person with HMPPS id: 2003/0011991D."
+    InternalServerError:
+      description: "An upstream service was not responding, so we cannot verify the accuracy of any data we did get."
+      properties:
+        status:
+          example: 500
+        userMessage:
+          example: "Internal Server Error"
+        developerMessage:
+          example: "Unable to complete request as an upstream service is not responding."
 
   parameters:
     hmppsIdPathParameter:
@@ -365,5 +416,13 @@ components:
       description: The HMPPS ID of the person
       schema:
         type: string
+      in: path
+      required: true
+    encodedHmppsIdPathParameter:
+      name: encodedHmppsId
+      description: A URL-encoded HMPPS identifier
+      schema:
+        type: string
+        example: "2008%2F0545166T"
       in: path
       required: true
