@@ -1,7 +1,7 @@
 asyncapi: 3.0.0
 info:
   title: Curious Integration at HMPPS Integration Events
-  version: 0.0.2
+  version: 0.0.3
   description: |
     Events to be sent to Curious
 
