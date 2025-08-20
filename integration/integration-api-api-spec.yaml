@@ -82,6 +82,18 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/PersonResponse"
+        "303":
+          description: Redirect response when the provided HMPPS ID of the person is merged.
+          headers:
+            Location:
+              description: Redirect URL to the new person resource
+              schema:
+                type: string
+                format: uri
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/RedirectionResponse"
         "404":
           description: "Not Found"
           content:
@@ -158,6 +170,13 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/DataResponseOffenderSearchResponse"
+
+    RedirectionResponse:
+      description: Redirect response for person where the provided HMPPS ID has been merged.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OffenderSearchRedirectResponse"
 
   schemas:
     EducationAssessments:
@@ -265,6 +284,15 @@ components:
         data:
           $ref: "#/components/schemas/OffenderSearchResponse"
       required: [data]
+
+    OffenderSearchRedirectResponse:
+      properties:
+        prisonerNumber:
+          type: string
+        removedPrisonerNumber:
+          type: string
+      required: ["prisonerNumber", "removedPrisonerNumber"]
+
     OffenderSearchResponse:
       properties:
         prisonerOffenderSearch:
