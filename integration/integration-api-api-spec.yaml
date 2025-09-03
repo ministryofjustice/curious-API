@@ -58,7 +58,7 @@ paths:
         "404":
           $ref: "#/components/responses/404ErrorResponse"
 
-  /v1/persons/{encodedHmppsId}:
+  /v1/persons/{hmppsId}:
     get:
       summary: Returns a person.
       description: |
@@ -78,7 +78,7 @@ paths:
           * nomisNumber
       tags: [Persons]
       parameters:
-        - $ref: "#/components/parameters/encodedHmppsIdPathParameter"
+        - $ref: "#/components/parameters/hmppsIdPathParameter"
       responses:
         "200":
           $ref: "#/components/responses/PersonResponse"
@@ -90,10 +90,6 @@ paths:
               schema:
                 type: string
                 format: uri
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/responses/RedirectionResponse"
         "404":
           description: "Not Found"
           content:
@@ -170,13 +166,6 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/DataResponseOffenderSearchResponse"
-
-    RedirectionResponse:
-      description: Redirect response for person where the provided HMPPS ID has been merged.
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/OffenderSearchRedirectResponse"
 
   schemas:
     EducationAssessments:
@@ -266,7 +255,7 @@ components:
         hmppsId:
           type: string
           description: HMPPS identifier
-          example: "2008/0545166T"
+          example: "X00001"
         contactDetails:
           $ref: "#/components/schemas/ContactDetailsWithEmailAndPhone"
         currentRestriction:
@@ -284,14 +273,6 @@ components:
         data:
           $ref: "#/components/schemas/OffenderSearchResponse"
       required: [data]
-
-    OffenderSearchRedirectResponse:
-      properties:
-        prisonerNumber:
-          type: string
-        removedPrisonerNumber:
-          type: string
-      required: ["prisonerNumber", "removedPrisonerNumber"]
 
     OffenderSearchResponse:
       properties:
@@ -438,13 +419,6 @@ components:
       description: The HMPPS ID of the person
       schema:
         type: string
-      in: path
-      required: true
-    encodedHmppsIdPathParameter:
-      name: encodedHmppsId
-      description: A URL-encoded HMPPS identifier
-      schema:
-        type: string
-        example: "2008%2F0545166T"
+        example: "X00001"
       in: path
       required: true
