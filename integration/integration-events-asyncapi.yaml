@@ -28,8 +28,6 @@ channels:
     messages:
       PERSON_STATUS_CHANGED:
         $ref: "#/components/messages/PersonStatusChanged"
-      PRISONER_MERGE:
-        $ref: "#/components/messages/PrisonerMerge"
       PRISONER_PRISONER_BASE_LOCATION_CHANGED:
         $ref: "#/components/messages/PrisonerBaseLocationChanged"
       PERSON_BSA_ELIGIBILITY_CHANGED:
@@ -57,17 +55,6 @@ components:
             eventId: 12345
             hmppsId: A123456
             eventType: PERSON_STATUS_CHANGED
-            url: "https://dev.integration-api.hmpps.service.justice.gov.uk/v1/persons/A123456"
-    PrisonerMerge:
-      title: Prisoner Merge
-      summary: "Event `PRISONER_MERGE`"
-      payload:
-        $ref: "#/components/schemas/EventNotification"
-      examples:
-        - payload:
-            eventId: 12345
-            hmppsId: A123456
-            eventType: PRISONER_MERGE
             url: "https://dev.integration-api.hmpps.service.justice.gov.uk/v1/persons/A123456"
     PrisonerBaseLocationChanged:
       title: Prisoner base location changed
