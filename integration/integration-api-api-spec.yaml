@@ -90,7 +90,7 @@ paths:
               schema:
                 type: string
                 format: uri
-                example: "/v1/persons/A1234AA"  
+                example: "/v1/persons/A1234AA"
           content: {}
         "404":
           description: "Not Found"
